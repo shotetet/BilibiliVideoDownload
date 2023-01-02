@@ -13,7 +13,7 @@
 
 #### Download
 ```text
-git clone https://github.com/MunMunMiao/BilibiliVideoDownload.git
+git clone https://github.com/shotetet/BilibiliVideoDownload.git
 ```
 
 #### Install dependencies
