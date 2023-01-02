@@ -23,7 +23,7 @@ npm install
 
 #### Quick start
 ```text
-node bilibili.js -c XXXXX -b BV1k4411e7Va
+node bilibili.js -b BV1k4411e7Va
 ```
 
 ## Options
