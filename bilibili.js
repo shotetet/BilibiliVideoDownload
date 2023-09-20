@@ -14,7 +14,7 @@ commander_1.program.requiredOption('-b, --bv <string>', 'BV id');
 commander_1.program.requiredOption('-c, --cookie <number>', 'SESSDATA','');
 commander_1.program.requiredOption('-d, --directory <string>', 'Output directory', './output');
 commander_1.program.requiredOption('-a, --audio', 'download audio only',false);
-
+commander_1.program.requiredOption('-e,--cache_directory <string>', 'Output directory','');
 commander_1.program.parse(process.argv);
 const userAgent = `Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.122 Safari/537.36`;
 let directory = './output';
@@ -22,6 +22,7 @@ let BVID;
 let SESSDATA;
 let videoData;
 let audio_flag;
+let cache_path;
 const values = commander_1.program.opts();
 if (values.bv) {
     BVID = values.bv;
@@ -35,6 +36,9 @@ if (values.directory) {
 if (values.audio) {
     audio_flag = values.audio;
 }
+if (values.cache_path) {
+    cache_path = values.cache_path;
+}
 console.log('Input config:');
 console.table({
     BV: BVID,
@@ -42,7 +46,7 @@ console.table({
     Directory: directory ? (0, path_1.resolve)(directory) : ''
 });
 async function getCurrentUserData() {
-    const result = await axios_1.default.get('https://api.bilibili.com/nav', {
+    const result = await axios_1.default.get('https://api.bilibili.com/x/web-interface/nav', {
         headers: {
             Cookie: `SESSDATA=${SESSDATA || ''}`,
             'User-Agent': userAgent
@@ -145,7 +149,7 @@ class FlvStream {
     }
 }
 async function getAcceptQuality(cid) {
-    const result = await axios_1.default.get('https://api.bilibili.com/x/player/playurl', {
+    const result = await axios_1.default.get('https://api.bilibili.com/x/player/wbi/playurl', {
         params: {
             bvid: BVID,
             cid,
@@ -165,7 +169,7 @@ async function getAcceptQuality(cid) {
     }
 }
 async function getVideoUrl(cid, qualityId) {
-    const result = await axios_1.default.get('https://api.bilibili.com/x/player/playurl', {
+    const result = await axios_1.default.get('https://api.bilibili.com/x/player/wbi/playurl', {
         params: {
             bvid: BVID,
             cid,
@@ -204,6 +208,7 @@ async function download(part, url, type) {
     const contentType = type || String(response.headers['content-type']);
     const total = Number(response.headers['content-length']);
     const filePath = (0, path_1.join)(__dirname, '/tmp', `${part.cid}-${total}`);
+    console.log('filePath ',filePath)
     const bar = new progress_1.default(`${contentType} [:bar] :percent :downloaded/:length`, {
         width: 30,
         total: total
